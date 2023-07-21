@@ -82,44 +82,43 @@ const toogleDone = (id) => {
 <style scoped>
 .main {
   padding: 40px;
+}
 
-  & h1 {
-    text-align: center;
-  }
+h1 {
+  text-align: center;
+}
 
-  & form {
-    display: flex;
-    gap: 10px;
+.main form {
+  display: flex;
+  gap: 10px;
+}
 
-    & button {
-      width: 160px;
-    }
-  }
+.main form button {
+  width: 160px;
+}
 
-  & article {
-    display: flex;
-    justify-content: space-between;
+.main article {
+  display: flex;
+  justify-content: space-between;
+}
 
-    & p {
-      align-self: center;
-      margin: 0;
-    }
+.main article p {
+  align-self: center;
+  margin: 0;
+}
 
-    & .isDone {
-      color: var(--primary);
-    }
+.main article .isDone {
+  color: var(--primary);
+}
 
-    & .btnGroup {
-      display: flex;
-      gap: 10px;
+.main article .btnGroup button {
+  min-width: 60px;
+  min-height: 60px;
+  margin: 0;
+}
 
-      & button {
-        min-width: 60px;
-        min-height: 60px;
-        margin: 0;
-      }
-
-    }
-  }
+.main article .btnGroup {
+  display: flex;
+  gap: 10px;
 }
 </style>
