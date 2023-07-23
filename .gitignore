@@ -27,3 +27,5 @@ src/firebase/enviroment.js
 .firebase
 .firebaserc
 firebase.json
+prisma
+.env
