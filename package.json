@@ -1,5 +1,5 @@
 {
-  "name": "firebase-vue-tutorial",
+  "name": "planning-poker",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,7 +11,9 @@
   "dependencies": {
     "@picocss/pico": "^1.5.10",
     "firebase": "^10.0.0",
-    "vue": "^3.3.4"
+    "slugify": "^1.6.6",
+    "vue": "^3.3.4",
+    "vue-router": "^4.0.13"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
