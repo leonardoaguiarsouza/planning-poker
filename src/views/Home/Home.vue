@@ -59,29 +59,4 @@ h1 {
 .main form button {
     width: 160px;
 }
-
-.main article {
-    display: flex;
-    justify-content: space-between;
-}
-
-.main article p {
-    align-self: center;
-    margin: 0;
-}
-
-.main article .isDone {
-    color: var(--primary);
-}
-
-.main article .btnGroup button {
-    min-width: 60px;
-    min-height: 60px;
-    margin: 0;
-}
-
-.main article .btnGroup {
-    display: flex;
-    gap: 10px;
-}
 </style>
