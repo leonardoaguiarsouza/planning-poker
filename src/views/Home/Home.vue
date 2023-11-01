@@ -27,9 +27,18 @@ const roomsCollection = collection(db, "rooms");
 const roomId = ref('');
 const newRoomTitle = ref('');
 
+const defaultDeck = [
+    1,
+    2,
+    3,
+    4,
+    5
+]
+
 const createRoom = () => {
     const newRoom = {
         title: newRoomTitle.value,
+        cards: defaultDeck,
         createdAt: Date.now()
     };
     addDoc(roomsCollection, newRoom).then((docRef) => {
