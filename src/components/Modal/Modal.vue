@@ -1,11 +1,7 @@
 <template>
-  <dialog :open="isOpen">
+  <dialog open>
     <article>
-      <a
-        aria-label="Close"
-        class="close"
-        @click="closeModal()"
-      >
+      <a aria-label="Close" class="close" @click="closeModal">
       </a>
       <h3>{{ title }}</h3>
       <slot></slot>
@@ -21,16 +17,13 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  isOpen: {
-    type: Boolean,
-    required: true,
-  },
 });
+const emit = defineEmits(["close"]);
 
-const isOpen = ref(true);
+// const isOpen = ref(true);
 
 const closeModal = () => {
-    isOpen.value = false;
+    emit("close");
 }
 </script>
 
@@ -41,7 +34,7 @@ article {
 }
 
 a {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 footer {
