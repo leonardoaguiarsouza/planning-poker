@@ -39,7 +39,9 @@ const createRoom = () => {
     const newRoom = {
         title: newRoomTitle.value,
         cards: defaultDeck,
-        createdAt: Date.now()
+        createdAt: Date.now(),
+        showPoll: false,
+        averageScore: 0
     };
     addDoc(roomsCollection, newRoom).then((docRef) => {
         router.push(`/${docRef.id}`)

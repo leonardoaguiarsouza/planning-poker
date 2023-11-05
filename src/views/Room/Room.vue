@@ -27,13 +27,21 @@
                 </modal>
                 <div class="room-controls">
                     <button @click="togglePoll">
-                        {{ showVotes ? "Ocultar" : "Revelar" }} Cards
+                        {{ showPoll ? "Ocultar" : "Revelar" }} Cards
                     </button>
-                    <button @click="clearPoll">Limpar votação</button>
+                    <button @click="clearPoll" :disabled="!showPoll">Limpar votação</button>
                     <modal title="Configurações da sala" v-show="isRoomEditModalOpen" @close="isRoomEditModalOpen = false">
-                        <form @submit.prevent="createPlayer">
-                            <input type="text" placeholder="Digite seu nome" v-model="playerNameInput" />
-                            <button :disabled="!playerNameInput">Salvar</button>
+                        <form @submit.prevent="updateCards">
+                            <!-- <select>
+                                <option>opção 1</option>
+                                <option>opção 2</option>
+                                <option>opção 3</option>
+                                <option>opção 4</option>
+                            </select> -->
+
+                            <input type="text" placeholder="Digite os valores dos cards, separados por vírgula"
+                                v-model="cardsEditInput" />
+                            <button :disabled="!cardsEditInput">Salvar</button>
                         </form>
                     </modal>
                 </div>
@@ -46,14 +54,18 @@
                     <tbody>
                         <tr v-for="(vote, player) in sortedPoll">
                             <td>{{ player }}</td>
-                            <td>{{ showVotes ? vote : "?" }}</td>
+                            <td>{{ showPoll ? vote : "?" }}</td>
                             <td>{{ vote !== "-" ? "Sim" : "Não" }}</td>
                         </tr>
                     </tbody>
                 </table>
+                <article class="average">
+                    <h1>Média</h1>
+                    <h2>{{ averageScore || '?' }}</h2>
+                </article>
                 <div class="deck">
                     <card v-for="(card, index) in sortedCards" :key="index" :card-value="card"
-                        :is-selected="selectedCard === card" @click="vote(card)" />
+                        :is-selected="!showPoll ? selectedCard === card : selectedCard = null" @click="vote(card)" />
                 </div>
             </div>
         </div>
@@ -72,6 +84,7 @@ import {
     query,
     where,
     orderBy,
+    deleteField
 } from "firebase/firestore";
 import { db } from "@/firebase/enviroment";
 import Card from "../../components/Card/Card.vue";
@@ -79,34 +92,42 @@ import Modal from "../../components/Modal/Modal.vue";
 
 const roomId = window.location.pathname.replace(/^\/([^\/]*).*$/, "$1");
 
-const isLoading = ref(true);
 const isPlayerEditModalOpen = ref(true);
 const isRoomEditModalOpen = ref(false);
 const playerNameFinal = ref("");
 const playerNameInput = ref("");
+const playerNameOld = ref(null);
+const cardsEditInput = ref([]);
 const roomTitle = ref("");
 const cards = ref([]);
 const poll = ref();
-const showVotes = ref(false);
+const showPoll = ref();
 const selectedCard = ref(null);
-
-const createPlayer = () => {
-    playerNameFinal.value = playerNameInput.value;
-    localStorage.playerName = playerNameFinal.value;
-    updatePoll(playerNameFinal.value, "-");
-    isPlayerEditModalOpen.value = false;
-};
+const isLoading = ref(true);
+const averageScore = ref();
 
 const roomsCollection = collection(db, "rooms");
+
+onMounted(() => {
+    window.addEventListener("beforeunload", (event) => {
+        if (playerNameFinal.value !== "") {
+            const updateData = {};
+            updateData["poll." + playerNameFinal.value] = deleteField();
+            updateDoc(doc(roomsCollection, roomId), updateData);
+        }
+    });
+});
 
 onMounted(() => {
     onSnapshot(doc(db, "rooms", roomId), (doc) => {
         roomTitle.value = doc.data().title;
         cards.value = doc.data().cards;
         poll.value = doc.data().poll;
+        showPoll.value = doc.data().showPoll;
+        cardsEditInput.value = doc.data().cards;
+        averageScore.value = doc.data().averageScore;
         isLoading.value = false;
     });
-
 });
 
 onMounted(() => {
@@ -135,9 +156,43 @@ const sortedPoll = computed(() => {
     return modifiedData;
 });
 
+const createPlayer = () => {
+    if (playerNameFinal.value !== "") {
+        playerNameOld.value = playerNameFinal.value;
+    }
+
+    playerNameFinal.value = playerNameInput.value;
+    localStorage.playerName = playerNameFinal.value;
+
+    if (playerNameOld.value) {
+        const updateData = {};
+        updateData["poll." + playerNameOld.value] = deleteField();
+        updateDoc(doc(roomsCollection, roomId), updateData);
+    }
+
+    updatePoll(playerNameFinal.value, "-");
+    isPlayerEditModalOpen.value = false;
+};
+
+const updateCards = () => {
+    const cardsArray = cardsEditInput.value.split(",");
+    console.log(cardsArray);
+
+    updateDoc(doc(roomsCollection, roomId), {
+        cards: cardsArray
+    });
+
+    clearPoll();
+    isRoomEditModalOpen.value = false;
+};
+
 const vote = (cardValue) => {
     if (playerNameFinal.value === "") {
         alert("Primeiro escolha um nome");
+        return;
+    }
+    else if (showPoll.value) {
+        alert("Votação encerrada");
         return;
     }
     updatePoll(playerNameFinal.value, cardValue);
@@ -152,7 +207,13 @@ const updatePoll = (playerName, cardValue) => {
 };
 
 const togglePoll = () => {
-    showVotes.value = !showVotes.value;
+    if (!showPoll.value) {
+        calcAverageScore();
+    }
+
+    updateDoc(doc(roomsCollection, roomId), {
+        showPoll: !showPoll.value
+    });
 };
 
 const clearPoll = () => {
@@ -161,7 +222,24 @@ const clearPoll = () => {
         updateData["poll." + key] = "-";
         updateDoc(doc(roomsCollection, roomId), updateData);
     }
-    showVotes.value = false;
+    updateDoc(doc(roomsCollection, roomId), {
+        averageScore: null
+    });
+    togglePoll();
+};
+
+const calcAverageScore = () => {
+    let votesArr = []
+    for (const [key, value] of Object.entries(poll.value)) {
+        if (value !== '-') {
+            votesArr.push(Number(value));
+        }
+    }
+
+    const calculateScore = votesArr.reduce((p, c) => p + c, 0) / votesArr.length;
+    updateDoc(doc(roomsCollection, roomId), {
+        averageScore: calculateScore
+    });
 };
 </script>
 
@@ -192,11 +270,18 @@ a {
     flex-direction: column;
 }
 
-.table {
-    margin-top: auto;
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
+.average {
+    align-self: center;
+    max-width: 200px;
+    border-radius: 20px;
+}
+
+.average h1 {
+    margin-bottom: 10px;
+}
+
+.average h2 {
+    margin-bottom: 0;
 }
 
 .deck {

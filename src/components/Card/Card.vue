@@ -7,7 +7,7 @@
 <script setup>
 const props = defineProps({
     cardValue: {
-        type: Number,
+        type: String,
         required: true
     },
     isSelected: {
