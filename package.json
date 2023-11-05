@@ -13,6 +13,7 @@
     "firebase": "^10.0.0",
     "slugify": "^1.6.6",
     "vue": "^3.3.4",
+    "vue-feather": "^2.0.0",
     "vue-router": "^4.0.13"
   },
   "devDependencies": {

@@ -4,18 +4,33 @@
         <div v-else>
             <nav>
                 <ul>
-                    <li><router-link to="/">Voltar</router-link></li>
-                </ul>
-                <ul>
                     <li>
-                        <strong v-if="playerNameFinal">Sala : {{ roomTitle }} - Perfil: {{ playerNameFinal }}</strong>
-                        <strong v-else>Sala : {{ roomTitle }}</strong>
+                        <router-link to="/">
+                            <vue-feather type="arrow-left" size="22" class="icon" />
+                            Voltar
+                        </router-link>
                     </li>
                 </ul>
                 <ul>
-                    <li><a @click="playerNameInput = playerNameFinal; isPlayerEditModalOpen = true">Configurações do
-                            Perfil</a></li>
-                    <li><a @click="isRoomEditModalOpen = true">Configurações da Sala</a></li>
+                    <li>
+                        <strong>
+                            <vue-feather type="home" size="22" class="icon" />
+                            {{ roomTitle }}
+                        </strong>
+                    </li>
+                </ul>
+                <ul>
+                    <li>
+                        <a @click="playerNameInput = playerNameFinal; isPlayerEditModalOpen = true" data-tooltip="Configurações do perfil" data-placement="left">
+                            <vue-feather type="user" size="22" class="icon" />
+                            {{ playerNameFinal }}
+                        </a>
+                    </li>
+                    <li>
+                        <a @click="isRoomEditModalOpen = true" data-tooltip="Configurações da Sala" data-placement="left">
+                            <vue-feather type="settings" size="22" class="icon" />
+                        </a>
+                    </li>
                 </ul>
             </nav>
             <div class="play-field">
@@ -27,7 +42,7 @@
                 </modal>
                 <div class="room-controls">
                     <button @click="togglePoll">
-                        {{ showPoll ? "Ocultar" : "Revelar" }} Cards
+                        {{ showPoll ? "Ocultar" : "Revelar" }} votos
                     </button>
                     <button @click="clearPoll" :disabled="!showPoll">Limpar votação</button>
                     <modal title="Configurações da sala" v-show="isRoomEditModalOpen" @close="isRoomEditModalOpen = false">
@@ -87,6 +102,7 @@ import {
     deleteField
 } from "firebase/firestore";
 import { db } from "@/firebase/enviroment";
+import VueFeather from 'vue-feather';
 import Card from "../../components/Card/Card.vue";
 import Modal from "../../components/Modal/Modal.vue";
 
@@ -251,6 +267,14 @@ const calcAverageScore = () => {
 h1,
 h2 {
     text-align: center;
+}
+
+a, strong {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 }
 
 a {
