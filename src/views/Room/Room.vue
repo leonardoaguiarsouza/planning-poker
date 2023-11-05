@@ -157,6 +157,7 @@ const sortedCards = computed(() => {
 });
 
 const sortedPoll = computed(() => {
+    if (!poll.value) return;
     const modifiedData = Object.keys(poll.value).sort().reduce(
         (obj, key) => {
             obj[key] = poll.value[key];
@@ -277,6 +278,9 @@ strong {
     align-items: center;
     justify-content: center;
     gap: 5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 a {
