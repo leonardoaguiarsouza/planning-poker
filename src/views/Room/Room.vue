@@ -21,7 +21,8 @@
                 </ul>
                 <ul>
                     <li>
-                        <a @click="playerNameInput = playerNameFinal; isPlayerEditModalOpen = true" data-tooltip="Configurações do perfil" data-placement="left">
+                        <a @click="playerNameInput = playerNameFinal; isPlayerEditModalOpen = true"
+                            data-tooltip="Configurações do perfil" data-placement="left">
                             <vue-feather type="user" size="22" class="icon" />
                             {{ playerNameFinal }}
                         </a>
@@ -88,17 +89,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, onUnmounted } from "vue";
 import {
     collection,
     doc,
     onSnapshot,
-    addDoc,
-    deleteDoc,
     updateDoc,
-    query,
-    where,
-    orderBy,
     deleteField
 } from "firebase/firestore";
 import { db } from "@/firebase/enviroment";
@@ -126,12 +122,12 @@ const roomsCollection = collection(db, "rooms");
 
 onMounted(() => {
     window.addEventListener("beforeunload", (event) => {
-        if (playerNameFinal.value !== "") {
-            const updateData = {};
-            updateData["poll." + playerNameFinal.value] = deleteField();
-            updateDoc(doc(roomsCollection, roomId), updateData);
-        }
+        logout()
     });
+});
+
+onUnmounted(() => {
+    logout();
 });
 
 onMounted(() => {
@@ -257,6 +253,14 @@ const calcAverageScore = () => {
         averageScore: calculateScore
     });
 };
+
+const logout = () => {
+    if (playerNameFinal.value !== "") {
+        const updateData = {};
+        updateData["poll." + playerNameFinal.value] = deleteField();
+        updateDoc(doc(roomsCollection, roomId), updateData);
+    }
+};
 </script>
 
 <style scoped>
@@ -269,7 +273,8 @@ h2 {
     text-align: center;
 }
 
-a, strong {
+a,
+strong {
     height: 50px;
     display: flex;
     align-items: center;
