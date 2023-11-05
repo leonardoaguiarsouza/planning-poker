@@ -14,7 +14,6 @@
                 <ul>
                     <li>
                         <strong>
-                            <vue-feather type="home" size="22" class="icon" />
                             {{ roomTitle }}
                         </strong>
                     </li>
@@ -37,7 +36,10 @@
             <div class="play-field">
                 <modal title="Digite seu nome" v-show="isPlayerEditModalOpen" @close="isPlayerEditModalOpen = false">
                     <form @submit.prevent="createPlayer">
-                        <input type="text" placeholder="Digite seu nome" v-model="playerNameInput" />
+                        <label for="playerName">
+                            Nome do perfil
+                            <input id="playerName" name="playerName" type="text" placeholder="Digite seu nome" v-model="playerNameInput" />
+                        </label>
                         <button :disabled="!playerNameInput">Salvar</button>
                     </form>
                 </modal>
@@ -48,15 +50,11 @@
                     <button @click="clearPoll" :disabled="!showPoll">Limpar votação</button>
                     <modal title="Configurações da sala" v-show="isRoomEditModalOpen" @close="isRoomEditModalOpen = false">
                         <form @submit.prevent="updateCards">
-                            <!-- <select>
-                                <option>opção 1</option>
-                                <option>opção 2</option>
-                                <option>opção 3</option>
-                                <option>opção 4</option>
-                            </select> -->
-
-                            <input type="text" placeholder="Digite os valores dos cards, separados por vírgula"
+                            <label for="cards">
+                                Cards exibidos na sala
+                                <input id="cards" name="cards" type="text" placeholder="Digite os valores dos cards, separados por vírgula"
                                 v-model="cardsEditInput" />
+                            </label>
                             <button :disabled="!cardsEditInput">Salvar</button>
                         </form>
                     </modal>
@@ -79,10 +77,11 @@
                     <h1>Média</h1>
                     <h2>{{ averageScore || '?' }}</h2>
                 </article>
-                <div class="deck">
-                    <card v-for="(card, index) in sortedCards" :key="index" :card-value="card"
-                        :is-selected="!showPoll ? selectedCard === card : selectedCard = null" @click="vote(card)" />
-                </div>
+
+            </div>
+            <div class="deck">
+                <card v-for="(card, index) in sortedCards" :key="index" :card-value="card"
+                    :is-selected="!showPoll ? selectedCard === card : selectedCard = null" @click="vote(card)" />
             </div>
         </div>
     </div>
@@ -294,6 +293,10 @@ a {
     align-items: center;
 }
 
+.room-controls button {
+    margin-bottom: 0;
+}
+
 .play-field {
     display: flex;
     flex-direction: column;
@@ -314,15 +317,15 @@ a {
 }
 
 .deck {
-    margin-top: auto;
+    /* margin-top: auto; */
     display: flex;
-    position: fixed;
+    /* position: fixed; */
     bottom: 0;
     left: 0;
     right: 0;
     padding: 40px;
     gap: 24px;
-    overflow: scroll;
+    overflow-x: auto;
 }
 
 @media only screen and (min-width: 768px) {
@@ -330,6 +333,10 @@ a {
         flex-direction: row;
         justify-content: space-evenly;
         align-items: baseline;
+    }
+
+    .room-controls button {
+        margin-bottom: 18px;
     }
 
     .room-controls button:last-child {
