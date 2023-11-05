@@ -187,7 +187,6 @@ const createPlayer = () => {
 
 const updateCards = () => {
     const cardsArray = cardsEditInput.value.split(",");
-    console.log(cardsArray);
 
     updateDoc(doc(roomsCollection, roomId), {
         cards: cardsArray
@@ -211,7 +210,6 @@ const vote = (cardValue) => {
 };
 
 const updatePoll = (playerName, cardValue) => {
-    console.log(playerName, cardValue);
     const updateData = {};
     updateData["poll." + playerName] = cardValue;
     updateDoc(doc(roomsCollection, roomId), updateData);
@@ -317,9 +315,7 @@ a {
 }
 
 .deck {
-    /* margin-top: auto; */
     display: flex;
-    /* position: fixed; */
     bottom: 0;
     left: 0;
     right: 0;

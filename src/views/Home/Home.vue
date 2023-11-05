@@ -69,7 +69,6 @@ const joinRoom = (roomId) => {
 
 const updateRecentRooms = (roomId) => {
     localStorage.recentRooms = roomId;
-    console.log(localStorage.recentRooms);
 }
 </script>
 

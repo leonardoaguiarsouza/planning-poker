@@ -10,7 +10,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
 
 const props = defineProps({
   title: {
@@ -19,8 +18,6 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(["close"]);
-
-// const isOpen = ref(true);
 
 const closeModal = () => {
     emit("close");
