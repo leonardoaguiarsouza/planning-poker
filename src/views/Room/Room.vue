@@ -63,13 +63,11 @@
                     <thead>
                         <th>Pessoa</th>
                         <th>Voto</th>
-                        <th>Votou</th>
                     </thead>
                     <tbody>
                         <tr v-for="(vote, player) in sortedPoll">
-                            <td>{{ player }}</td>
+                            <td>{{ player }} {{ vote !== "-" ? "✔" : "" }}</td>
                             <td>{{ showPoll ? vote : "?" }}</td>
-                            <td>{{ vote !== "-" ? "Sim" : "Não" }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -120,6 +118,8 @@ const averageScore = ref();
 const roomsCollection = collection(db, "rooms");
 
 onMounted(() => {
+    updateRecentRooms(roomId);
+
     window.addEventListener("beforeunload", (event) => {
         logout()
     });
@@ -167,6 +167,10 @@ const sortedPoll = computed(() => {
     );
     return modifiedData;
 });
+
+const updateRecentRooms = (roomId) => {
+    localStorage.recentRooms = roomId;
+}
 
 const createPlayer = () => {
     if (playerNameFinal.value !== "") {
@@ -241,12 +245,13 @@ const clearPoll = () => {
 const calcAverageScore = () => {
     let votesArr = []
     for (const [key, value] of Object.entries(poll.value)) {
-        if (value !== '-') {
+        if (value !== '-' && value !== '?') {
             votesArr.push(Number(value));
         }
     }
 
-    const calculateScore = votesArr.reduce((p, c) => p + c, 0) / votesArr.length;
+    let calculateScore = votesArr.reduce((p, c) => p + c, 0) / votesArr.length;
+    calculateScore = Math.round(calculateScore * 10) / 10;
     updateDoc(doc(roomsCollection, roomId), {
         averageScore: calculateScore
     });
@@ -278,13 +283,16 @@ strong {
     align-items: center;
     justify-content: center;
     gap: 5px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
 }
 
 a {
     cursor: pointer;
+}
+
+strong {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .room-controls {

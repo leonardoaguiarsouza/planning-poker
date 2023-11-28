@@ -58,18 +58,15 @@ const createRoom = async () => {
 
     addDoc(roomsCollection, newRoom).then((docRef) => {
         router.push(`/${docRef.id}`);
-        updateRecentRooms(docRef.id);
+        // updateRecentRooms(docRef.id);
     });
 }
 
 const joinRoom = (roomId) => {
     router.push(`/${roomId}`);
-    updateRecentRooms(roomId);
+    // updateRecentRooms(roomId);
 }
 
-const updateRecentRooms = (roomId) => {
-    localStorage.recentRooms = roomId;
-}
 </script>
 
 <style scoped>
